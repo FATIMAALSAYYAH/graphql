@@ -1,9 +1,10 @@
 import { JWTUtil } from '../utils/jwt.js';
+import config from '../config.js';
 
 export class GraphQLAPI {
     constructor() {
-        // The base URL for the GraphQL API
-        this.endpoint = 'https://learn.reboot01.com/api/graphql-engine/v1/graphql'
+        // Use the configured GraphQL endpoint
+        this.endpoint = config.apiEndpoint;
         this.token = null
     }
 
