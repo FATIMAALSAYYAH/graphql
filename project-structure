@@ -1,0 +1,21 @@
+graphql-profile/
+├── index.html
+├── src/
+│   ├── js/
+│   │   ├── api/
+│   │   │   ├── auth.js
+│   │   │   └── graphql.js
+│   │   ├── components/
+│   │   │   ├── Login.js
+│   │   │   ├── Profile.js
+│   │   │   └── Graphs/
+│   │   │       ├── XPGraph.js
+│   │   │       └── AuditGraph.js
+│   │   └── app.js
+│   ├── css/
+│   │   ├── style.css
+│   │   ├── login.css
+│   │   └── profile.css
+│   └── utils/
+│       └── jwt.js
+└── README.md 

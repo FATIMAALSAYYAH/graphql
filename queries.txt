@@ -1,0 +1,461 @@
+// queries.js
+// Defines the GraphQL queries used to fetch data for the profile page and graphs.
+
+// User Profile Queries
+export const GET_USER_LEVEL = `
+query GetUserLevel($userId: Int!) {
+    event_user(where: { userId: { _eq: $userId }, eventId: { _eq: 20 } }) {
+        level
+    }
+}
+`;
+
+export const GET_USER_BASIC_INFO = `
+query GetUserBasicInfo($userId: Int!) {
+    user(where: { id: { _eq: $userId } }) {
+        id
+        firstName
+        lastName
+        login
+        email
+        auditRatio
+        totalDown
+        totalUp
+    }
+}
+`;
+
+export const GET_USER_TRANSACTIONS = `
+query GetUserTransactions($userId: Int!) {
+    user(where: { id: { _eq: $userId } }) {
+        transactions(
+            where: { eventId: { _eq: 20 }, userId: { _eq: $userId }, type: { _eq: "xp" } }
+            order_by: { createdAt: desc }
+        ) {
+            id
+            amount
+            createdAt
+            object {
+              name
+            }
+        }
+    }
+}
+`;
+
+export const GET_USER_AUDITS = `
+query GetUserAudits($userId: Int!) {
+    user(where: { id: { _eq: $userId } }) {
+        audits(
+            distinct_on: [resultId]
+            where: {
+                _or: [
+                    { auditorId: { _eq: $userId } },
+                    { group: { members: { userId: { _eq: $userId } } } } 
+                ],
+                _and: [
+                    { _or: [
+                        { _and: [{ resultId: { _is_null: true } }, { grade: { _is_null: true } }] },
+                        { grade: { _is_null: false } }
+                    ]}
+                ]
+            }
+            order_by: [{ resultId: desc }]
+        ) {
+            id
+            grade
+            endAt
+            group {
+                captainLogin
+                path
+            }
+        }
+    }
+}
+`;
+
+export const GET_AUDITS_CONDUCTED_BY_USER = `
+query GetAuditsConductedByUser($userId: Int!) {
+  audit(
+    where: {
+      auditorId: { _eq: $userId },
+      _and: [
+        { _or: [
+            { _and: [{ resultId: { _is_null: true } }, { grade: { _is_null: true } }] },
+            { grade: { _is_null: false } }
+        ]}
+      ]
+    }
+    distinct_on: [resultId]
+    order_by: { resultId: desc }
+  ) {
+    id
+    grade
+    endAt
+    group {
+      captainLogin
+      path
+    }
+  }
+}
+`;
+
+export const GET_AUDITS_RECEIVED_BY_USER = `
+query GetAuditsReceivedByUser($userId: Int!) {
+  audit(
+    where: {
+      group: { members: { userId: { _eq: $userId } } },
+      _and: [
+        { _or: [
+            { _and: [{ resultId: { _is_null: true } }, { grade: { _is_null: true } }] },
+            { grade: { _is_null: false } }
+        ]}
+      ]
+    }
+    distinct_on: [resultId]
+    order_by: { resultId: desc }
+  ) {
+    id
+    grade
+    endAt
+    group {
+      captainLogin
+      path
+    }
+  }
+}
+`;
+
+export const GET_USER_GROUPS = `
+query GetUserGroups($userId: Int!) {
+    user(where: { id: { _eq: $userId } }) {
+        groups(
+            where: { group: { members: { userId: { _eq: $userId } } } }
+            order_by: [{ updatedAt: desc }]
+        ) {
+            group {
+                path
+                createdAt
+                updatedAt
+                members {
+                    user {
+                        login
+                    }
+                }
+            }
+        }
+    }
+}
+`;
+
+// Group Queries
+export const GET_ACTIVE_WORKING_GROUPS = `
+query GetActiveWorkingGroups($userId: Int!) {
+  group(
+    where: {
+      members: { userId: { _eq: $userId } },
+      status: { _in: [working] }
+    }
+  ) {
+    id
+    path
+    status
+    createdAt
+    updatedAt
+    captain {
+      id
+      login
+    }
+    object {
+      id
+      name
+    }
+    results {
+      grade
+    }
+  }
+}
+`;
+
+export const GET_ACTIVE_WORKING_GROUPS_COUNT = `
+query GetActiveWorkingGroupsCount($userId: Int!) {
+    group_aggregate(
+        where: {
+            members: { userId: { _eq: $userId } },
+            status: { _in: [working] }
+        }
+    ) {
+        aggregate {
+            count
+        }
+    }
+}
+`;
+
+export const GET_FINISHED_PROJECTS = `
+query GetFinishedProjects($userId: Int!) {
+  group(
+    where: {
+      members: { userId: { _eq: $userId } },
+      status: { _eq: finished }
+    }
+    order_by: { updatedAt: desc }
+  ) {
+    id
+    path
+    status
+    createdAt
+    updatedAt
+    captain {
+      id
+      login
+    }
+    object {
+      id
+      name
+    }
+    results {
+      grade
+    }
+  }
+}
+`;
+
+export const GET_FINISHED_PROJECTS_COUNT = `
+query GetFinishedProjectsCount($userId: Int!) {
+    group_aggregate(
+        where: {
+            members: { userId: { _eq: $userId } },
+            status: { _eq: finished }
+        }
+    ) {
+        aggregate {
+            count
+        }
+    }
+}
+`;
+
+export const GET_LATEST_FINISHED_PROJECT = `
+query GetLatestFinishedProject($userId: Int!) {
+    group(
+        where: {
+            members: { userId: { _eq: $userId } }
+            status: { _eq: finished }
+        }
+        limit: 1
+        order_by: { updatedAt: desc }
+    ) {
+        path
+        updatedAt
+        event {
+            id
+            description
+        }
+    }
+}
+`;
+
+// Graph Data Query
+export const GET_GRAPH_DATA = `
+query GetGraphData($userId: Int!) {
+    transaction(
+        where: {
+            userId: { _eq: $userId }
+            type: { _eq: "xp" }
+        }
+        order_by: { createdAt: desc }
+    ) {
+        id
+        amount
+        createdAt
+        path
+    }
+}
+`;
+
+export const GET_PROJECT_DETAILS = `
+  query GetProjectDetails($projectId: Int!) {
+    group(where: {id: {_eq: $projectId}}) {
+      id
+      path
+      status
+      createdAt
+      updatedAt
+      campus
+      captain {
+        id
+        login
+      }
+      object {
+        name
+        type
+      }
+      members {
+        user {
+          id
+          login
+        }
+      }
+      auditors(where: {grade: {_is_null: false}}) {
+        id
+        grade
+        auditor {
+          id
+          login
+        }
+      }
+      progresses {
+        id
+        isDone
+        grade
+      }
+      results {
+        id
+        grade
+      }
+    }
+  }
+`;
+
+// Add these two new queries:
+
+export const GET_USER_SKILLS_AND_TRANSACTIONS = `
+query GetUserSkillsAndTransactions($userId: Int!) {
+    user(where: { id: { _eq: $userId } }) {
+        transactions(
+            where: {
+                type: { _in: ["skill_js", "skill_go", "skill_php", "skill_prog", "skill_front-end", "skill_back-end"] }
+            }
+            order_by: [{ type: desc }, { amount: desc }]
+            distinct_on: [type]
+        ) {
+            type
+            amount
+            createdAt
+        }
+    }
+}
+`;
+
+export const GET_USER_TOTAL_XP = `
+query GetUserTotalXP($userId: Int!) {
+    user(where: { id: { _eq: $userId } }) {
+        transactions_aggregate(where: { type: { _eq: "xp" }, eventId: { _eq: 20 } }) {
+            aggregate {
+                sum {
+                    amount
+                }
+            }
+        }
+    }
+}
+`;
+
+// New query to get XP for a specific object
+export const GET_XP_FOR_OBJECT = `
+query GetXPForObject($userId: Int!, $objectId: Int!) {
+  transaction(
+    where: {
+      userId: { _eq: $userId },
+      objectId: { _eq: $objectId },
+      type: { _eq: "xp" }
+    }
+  ) {
+    amount
+  }
+}
+`;
+
+export const GET_ALL_PROJECTS = `
+query GetAllProjects($userId: Int!) {
+  group(
+    where: {
+      members: { userId: { _eq: $userId } },
+      status: { _in: [working, finished] }
+    }
+    order_by: { updatedAt: desc }
+  ) {
+    id
+    path
+    status
+    createdAt
+    updatedAt
+    captain {
+      id
+      login
+    }
+    object {
+      id
+      name
+    }
+    results {
+      grade
+    }
+  }
+  
+  transaction(
+    where: {
+      userId: { _eq: $userId },
+      type: { _eq: "xp" }
+    }
+  ) {
+    amount
+    objectId
+  }
+}
+`;
+
+export const GET_PROJECT_XP = `
+query GetProjectXP($userId: Int!, $objectId: Int!) {
+  transaction(
+    where: {
+      userId: { _eq: $userId },
+      objectId: { _eq: $objectId },
+      type: { _eq: "xp" }
+    }
+  ) {
+    amount
+  }
+}
+`;
+
+// New query to get project overview
+export const GET_PROJECT_OVERVIEW = `
+query GetProjectOverview($userId: Int!) {
+  active: group_aggregate(where: {members: {userId: {_eq: $userId}}, status: {_eq: working}}) {
+    aggregate { count }
+  }
+  completed: group_aggregate(where: {members: {userId: {_eq: $userId}}, status: {_eq: finished}}) {
+    aggregate { count }
+  }
+  passed: group_aggregate(where: {members: {userId: {_eq: $userId}}, status: {_eq: finished}, results: {grade: {_gte: 1}}}) {
+    aggregate { count }
+  }
+  failed: group_aggregate(where: {members: {userId: {_eq: $userId}}, status: {_eq: finished}, results: {grade: {_lt: 1}}}) {
+    aggregate { count }
+  }
+}
+`;
+
+// Remove or comment out the query for auditinnnnnng ratio data if it's not needed elsewhere
+// GET_AUDIT_RATIO_DATA = SELECT audits_done, audits_received FROM users WHERE username = ?
+
+// Add new query for skill distribution
+export const GET_USER_SKILLS = `
+query GetUserSkills($userId: Int!) {
+    user(where: { id: { _eq: $userId } }) {
+        skills(
+            where: {
+                type: { _in: ["skill_js", "skill_go", "skill_html", "skill_prog", "skill_front-end", "skill_back-end"] }
+            }
+            order_by: [{ type: desc }, { amount: desc }]
+            distinct_on: [type]
+        ) {
+            type
+            amount
+            createdAt
+        }
+    }
+}
+`;

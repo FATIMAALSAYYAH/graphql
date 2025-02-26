@@ -1,0 +1,20 @@
+{
+  "name": "graphql-dashboard",
+  "version": "1.0.0",
+  "description": "GraphQL Dashboard for GitHub Pages",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "npx nodemon server.js"
+  },
+  "keywords": [
+    "graphql",
+    "dashboard",
+    "github-pages"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "nodemon": "^2.0.22"
+  }
+} 
