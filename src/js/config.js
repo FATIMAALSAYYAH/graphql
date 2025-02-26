@@ -4,10 +4,10 @@ const config = {
   baseUrl: '/graphql/',
   
   // API endpoint for GraphQL
-  apiEndpoint: 'https://01.kood.tech/api/graphql-engine/v1/graphql',
+  apiEndpoint: 'https://learn.reboot01.com/api/graphql-engine/v1/graphql',
   
   // API endpoint for authentication
-  authEndpoint: 'https://01.kood.tech/api/auth/signin'
+  authEndpoint: 'https://learn.reboot01.com/api/auth/signin'
 };
 
 export default config; 
