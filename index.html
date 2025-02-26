@@ -8,10 +8,10 @@
     <!-- REMOVE base tag - it's causing conflicts -->
     <!-- <base href="/graphql/"> -->
     
-    <!-- Use absolute paths from root -->
-    <link rel="stylesheet" href="/src/css/login.css">
-    <link rel="stylesheet" href="/src/css/style.css">
-    <link rel="stylesheet" href="/src/css/skills-graph.css">
+    <!-- Use relative paths instead of absolute paths -->
+    <link rel="stylesheet" href="src/css/login.css">
+    <link rel="stylesheet" href="src/css/style.css">
+    <link rel="stylesheet" href="src/css/skills-graph.css">
     
     <!-- D3.js for charts -->
     <script src="https://d3js.org/d3.v7.min.js"></script>
@@ -25,9 +25,9 @@
         </div>
     </div>
 
-    <!-- Main application script with absolute path -->
+    <!-- Main application script with relative path -->
     <script type="module">
-        import { App } from '/src/js/app.js';
+        import { App } from './src/js/app.js';
         
         // Initialize the application when DOM is loaded
         document.addEventListener('DOMContentLoaded', () => {

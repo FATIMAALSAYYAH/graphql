@@ -90,7 +90,7 @@ export class Login {
             console.log('Token stored:', token.substring(0, 20) + '...');
             
             // Force a hard reload to ensure the auth state is picked up
-            window.location.href = window.location.origin + config.baseUrl;
+            window.location.href = './';
         } catch (error) {
             console.error('Login error:', error);
             this.showError(error.message || 'Failed to login. Please check your credentials.');
