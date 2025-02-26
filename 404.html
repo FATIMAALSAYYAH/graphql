@@ -65,6 +65,22 @@
             transform: translateY(-2px);
         }
     </style>
+    <script>
+        // Script for SPA routing
+        // Redirect to the main app with the path as a fragment
+        var segmentCount = 1; // Adjust this value to match your GitHub Pages structure
+        var location = window.location;
+        
+        // Handle GitHub Pages URL structure
+        var newPath = '/graphql/';
+        var redirectPath = location.pathname.replace(/^\/graphql\//, '');
+        
+        if (redirectPath && !redirectPath.includes('.')) {
+            window.location.replace(location.origin + newPath + '#/' + redirectPath);
+        } else {
+            window.location.replace(location.origin + newPath);
+        }
+    </script>
 </head>
 <body>
     <div class="container">
@@ -72,7 +88,7 @@
         <h1>Page Not Found</h1>
         <p>We couldn't find the page you were looking for. It might have been moved, deleted, or never existed in the first place.</p>
         <p>Please check the URL or navigate back to the home page.</p>
-        <a href="/" class="home-link">Return to Home</a>
+        <a href="/graphql/" class="home-link">Return to Home</a>
     </div>
 </body>
 </html> 

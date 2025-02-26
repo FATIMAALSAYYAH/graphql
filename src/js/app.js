@@ -14,6 +14,9 @@ export class App {
 
     init() {
         try {
+            console.log('App initializing...');
+            console.log('JWT in localStorage:', localStorage.getItem('jwt') ? 'EXISTS' : 'NONE');
+            
             if (this.auth.isAuthenticated()) {
                 console.log('User is authenticated, showing profile')
                 const profile = new Profile(this.container)

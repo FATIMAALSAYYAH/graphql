@@ -1,4 +1,5 @@
 import { Auth } from '../api/auth.js'
+import config from '../config.js'
 
 export class Login {
     constructor(container) {
@@ -57,14 +58,59 @@ export class Login {
                 const username = document.getElementById('username').value
                 const password = document.getElementById('password').value
 
-                await this.auth.login({ username, password })
-                submitButton.textContent = 'Success!'
-                window.location.reload()
+                await this.handleSubmit(e)
             } catch (error) {
                 submitButton.disabled = false
                 submitButton.textContent = 'Login'
                 errorMessage.textContent = error.message
+            } finally {
+                submitButton.disabled = false
+                submitButton.textContent = 'Login'
             }
         })
+    }
+
+    async handleSubmit(event) {
+        event.preventDefault();
+        
+        try {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            
+            // Clear any previous error
+            this.clearError();
+            // Show loading state
+            this.setLoading(true);
+            
+            // Login attempt
+            await this.auth.login({ username, password });
+            
+            // If we get here, login was successful
+            console.log('Login successful, redirecting to profile');
+            
+            // Force a hard reload to ensure the auth state is picked up
+            window.location.href = config.baseUrl;
+        } catch (error) {
+            console.error('Login error:', error);
+            this.showError(error.message || 'Failed to login. Please check your credentials.');
+        } finally {
+            this.setLoading(false);
+        }
+    }
+
+    clearError() {
+        const errorMessage = document.getElementById('error-message')
+        errorMessage.textContent = ''
+    }
+
+    setLoading(isLoading) {
+        const submitButton = document.querySelector('button[type="submit"]')
+        submitButton.disabled = isLoading
+        submitButton.textContent = isLoading ? 'Logging in...' : 'Login'
+    }
+
+    showError(message) {
+        const errorMessage = document.getElementById('error-message')
+        errorMessage.textContent = message
     }
 } 

@@ -43,49 +43,42 @@ export class JWTUtil {
     }
 
     static validateToken(token) {
-        if (!token || typeof token !== 'string') {
-            console.error('Token is empty or not a string');
-            return false;
-        }
+        if (!token) return false;
         
-        // Check if token has three parts
+        // Basic structure validation
         const parts = token.split('.');
-        if (parts.length !== 3) {
-            console.error('Token does not have three parts:', parts.length);
-            return false;
-        }
-
-        // Additional validation: check if each part is valid base64url
+        if (parts.length !== 3) return false;
+        
         try {
-            for (let i = 0; i < parts.length; i++) {
-                const part = parts[i];
-                // Simple check: base64url should only contain these characters
-                if (!/^[A-Za-z0-9_-]*$/.test(part)) {
-                    console.error(`Token part ${i} contains invalid characters`);
-                    return false;
-                }
-                
-                // Try to convert to base64
-                try {
-                    this.base64UrlToBase64(part);
-                } catch (e) {
-                    console.error(`Failed to convert token part ${i} to base64:`, e);
-                    return false;
-                }
+            // Try to parse the payload to check expiration
+            const payload = JSON.parse(atob(this.base64UrlToBase64(parts[1])));
+            
+            // Check if token is expired
+            if (payload.exp && Date.now() >= payload.exp * 1000) {
+                console.log('Token expired');
+                return false;
             }
+            
             return true;
-        } catch (error) {
-            console.error('Token validation error:', error);
+        } catch (e) {
+            console.error('Token validation error:', e);
             return false;
         }
     }
 
     static getToken() {
-        const token = localStorage.getItem('jwt');
-        if (!token || !this.validateToken(token)) {
+        return localStorage.getItem('jwt');
+    }
+    
+    static setToken(token) {
+        if (token) {
+            localStorage.setItem('jwt', token);
+        } else {
             localStorage.removeItem('jwt');
-            return null;
         }
-        return token;
+    }
+    
+    static clearToken() {
+        localStorage.removeItem('jwt');
     }
 }
