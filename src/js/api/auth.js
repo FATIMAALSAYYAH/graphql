@@ -1,9 +1,10 @@
 import { graphqlInstance } from './graphqlInstance.js'
 import { JWTUtil } from '../utils/jwt.js'
+import config from '../config.js'
 
 export class Auth {
     constructor() {
-        this.baseURL = 'https://learn.reboot01.com/api/auth/signin'
+        this.baseURL = config.authEndpoint
         this.graphql = graphqlInstance
         
         // Check for existing token with validation
@@ -12,6 +13,11 @@ export class Auth {
             this.token = token
             this.graphql.setToken(token)
         }
+
+        // Clear existing token
+        localStorage.removeItem('jwt')
+        this.token = null
+        this.graphql.setToken(null)
     }
 
             async login({ username, password }) {
