@@ -1,15 +1,13 @@
 import { Auth } from './api/auth.js'
 import { Login } from './components/Login.js'
 import { Profile } from './components/Profile.js'
-import setupRouter from './router.js'
+
+const BASE_PATH = location.pathname.includes('/graphql') ? '/graphql/' : '/';
 
 export class App {
     constructor() {
         this.container = document.getElementById('app')
         this.auth = new Auth()
-        
-        // Setup SPA routing for GitHub Pages
-        setupRouter()
     }
 
     init() {
