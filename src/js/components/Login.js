@@ -83,13 +83,14 @@ export class Login {
             this.setLoading(true);
             
             // Login attempt
-            await this.auth.login({ username, password });
+            const token = await this.auth.login({ username, password });
             
             // If we get here, login was successful
             console.log('Login successful, redirecting to profile');
+            console.log('Token stored:', token.substring(0, 20) + '...');
             
             // Force a hard reload to ensure the auth state is picked up
-            window.location.href = config.baseUrl;
+            window.location.href = window.location.origin + config.baseUrl;
         } catch (error) {
             console.error('Login error:', error);
             this.showError(error.message || 'Failed to login. Please check your credentials.');

@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Path Test</title>
+</head>
+<body>
+    <h1>Path Testing</h1>
+    <p>This page helps debug path issues.</p>
+    
+    <script>
+        document.write('<p>Current URL: ' + window.location.href + '</p>');
+        document.write('<p>Hostname: ' + window.location.hostname + '</p>');
+        document.write('<p>Path: ' + window.location.pathname + '</p>');
+        document.write('<p>localStorage.jwt: ' + (localStorage.getItem('jwt') ? 'EXISTS' : 'NOT FOUND') + '</p>');
+    </script>
+</body>
+</html> 

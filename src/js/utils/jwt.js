@@ -73,8 +73,10 @@ export class JWTUtil {
     static setToken(token) {
         if (token) {
             localStorage.setItem('jwt', token);
+            console.log('Token stored in localStorage');
         } else {
             localStorage.removeItem('jwt');
+            console.log('Token removed from localStorage');
         }
     }
     
