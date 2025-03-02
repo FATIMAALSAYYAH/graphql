@@ -1,6 +1,10 @@
 // Configuration settings for the application
 const config = {
-  baseUrl: './',  // Use relative path instead of absolute
+  // Check if we're running on GitHub Pages and set the base URL accordingly
+  baseUrl: window.location.hostname.includes('github.io') 
+    ? '/graphql/' 
+    : './',
+  
   apiEndpoint: 'https://learn.reboot01.com/api/graphql-engine/v1/graphql',
   
   // API endpoint for authentication
@@ -21,5 +25,11 @@ config.resolvePath = function(path) {
   
   return this.baseUrl + path;
 };
+
+// Add debug information to help troubleshoot
+if (window.location.hostname.includes('github.io')) {
+  console.log('Running on GitHub Pages');
+  console.log('Base URL:', config.baseUrl);
+}
 
 export default config; 
