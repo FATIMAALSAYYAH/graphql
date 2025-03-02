@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>API Test</title>
+</head>
+<body>
+  <h1>Testing API Connection</h1>
+  <div id="result">Loading...</div>
+  
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      console.log('Testing API connection...');
+      fetch('https://learn.reboot01.com/api/graphql-engine/v1/graphql', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ query: '{ __schema { types { name } } }' })
+      })
+      .then(response => {
+        console.log('Response status:', response.status);
+        return response.json();
+      })
+      .then(data => {
+        console.log('Data received:', data);
+        document.getElementById('result').textContent = 'API responded. Check console for details.';
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        document.getElementById('result').textContent = 'Error: ' + error.message;
+      });
+    });
+  </script>
+</body>
+</html> 
