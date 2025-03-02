@@ -539,4 +539,38 @@ body {
         padding: 5px;
         font-size: 11px;
     }
+    
+    /* XP Graph specific mobile styles */
+    .xp-svg-container svg {
+        overflow: visible !important;
+    }
+    
+    .x-axis text, .y-axis text {
+        font-size: 9px !important;
+    }
+    
+    .x-axis-label, .y-axis-label {
+        font-size: 10px !important;
+    }
+    
+    .graph-tooltip {
+        font-size: 10px !important;
+        padding: 4px 6px !important;
+        max-width: 140px !important;
+    }
+    
+    /* Audit graph specific mobile styles */
+    .audit-svg-container svg {
+        overflow: visible !important;
+    }
+    
+    .value-label, .description-label {
+        font-size: 10px !important;
+    }
+    
+    /* Common graph styles for mobile */
+    .graph-box {
+        min-height: 250px;
+        overflow: visible;
+    }
 } 

@@ -19,11 +19,23 @@ export class AuditBarGraph {
         // Get the audit data from the user data
         this.auditData = this.getAuditData();
         
-        // Make chart responsive
+        // Make chart responsive with better mobile handling
         this.containerWidth = this.container.clientWidth;
+        
+        // Flag for mobile layout
+        this.isMobile = this.containerWidth < 480;
+        
         this.width = this.containerWidth || 600;
-        this.height = Math.min(300, this.width * 0.6);
-        this.margin = { top: 30, right: 30, bottom: 50, left: 60 };
+        // Adjust height for better aspect ratio on mobile
+        this.height = this.isMobile ? 220 : Math.min(300, this.width * 0.6);
+        
+        // Adjust margins for mobile
+        this.margin = { 
+            top: 20, 
+            right: this.isMobile ? 20 : 30, 
+            bottom: this.isMobile ? 40 : 50, 
+            left: this.isMobile ? 40 : 60 
+        };
         
         // Color scheme - using our theme colors
         this.colors = {
@@ -190,19 +202,19 @@ export class AuditBarGraph {
         const xScale = d3.scaleBand()
             .domain(this.auditData.map(d => d.label))
             .range([0, innerWidth])
-            .padding(0.4);
+            .padding(this.isMobile ? 0.3 : 0.4); // Narrower bars on mobile
         
         const yScale = d3.scaleLinear()
             .domain([0, d3.max(this.auditData, d => d.value) * 1.1]) // Add 10% padding at the top
             .range([innerHeight, 0]);
         
-        // Add grid lines
+        // Add grid lines - fewer on mobile
         g.append('g')
             .attr('class', 'grid-lines')
             .call(d3.axisLeft(yScale)
                 .tickSize(-innerWidth)
                 .tickFormat('')
-                .ticks(5))
+                .ticks(this.isMobile ? 3 : 5))
             .style('stroke', 'rgba(226, 232, 240, 0.5)')
             .style('stroke-dasharray', '3,3')
             .selectAll('line')
@@ -284,40 +296,40 @@ export class AuditBarGraph {
                 g.selectAll('.tooltip').remove();
             });
         
-        // Add value labels on top of bars
+        // Add value labels on top of bars - smaller font on mobile
         g.selectAll('.value-label')
             .data(this.auditData)
             .enter()
             .append('text')
             .attr('class', 'value-label')
             .attr('x', d => xScale(d.label) + xScale.bandwidth() / 2)
-            .attr('y', d => yScale(d.value) - 10)
+            .attr('y', d => yScale(d.value) - (this.isMobile ? 5 : 10))
             .attr('text-anchor', 'middle')
             .attr('dominant-baseline', 'central')
-            .style('font-size', '14px')
+            .style('font-size', this.isMobile ? '10px' : '14px')
             .style('font-weight', '600')
             .style('fill', '#2d3748')
             .style('opacity', 0) // Start invisible for animation
-            .text(d => this.formatNumber(d.value))
+            .text(d => this.formatMobileNumber(d.value))
             .transition() // Add animation
             .duration(1000)
             .delay(600)
             .style('opacity', 1);
         
-        // Add description labels below bars
+        // Add description labels below bars - smaller font on mobile
         g.selectAll('.description-label')
             .data(this.auditData)
             .enter()
             .append('text')
             .attr('class', 'description-label')
             .attr('x', d => xScale(d.label) + xScale.bandwidth() / 2)
-            .attr('y', innerHeight + 25)
+            .attr('y', innerHeight + (this.isMobile ? 20 : 25))
             .attr('text-anchor', 'middle')
-            .style('font-size', '14px')
+            .style('font-size', this.isMobile ? '11px' : '14px')
             .style('font-weight', '500')
             .style('fill', '#2d3748')
             .style('opacity', 0) // Start invisible for animation
-            .text(d => d.description)
+            .text(d => this.isMobile ? d.label : d.description)
             .transition() // Add animation
             .duration(800)
             .delay((d, i) => 400 + i * 200)
@@ -380,5 +392,18 @@ export class AuditBarGraph {
             return (num / 1000).toFixed(0) + 'K';
         }
         return num;
+    }
+    
+    // Add a special formatter for mobile
+    formatMobileNumber(num) {
+        if (this.isMobile) {
+            if (num >= 1000000) {
+                return (num / 1000000).toFixed(1) + 'M';
+            } else if (num >= 1000) {
+                return (num / 1000).toFixed(0) + 'K';
+            }
+            return num;
+        }
+        return this.formatNumber(num);
     }
 } 

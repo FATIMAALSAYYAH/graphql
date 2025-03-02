@@ -18,11 +18,21 @@ export class XPGraph {
         
         this.data = this.processData(data);
         
-        // Make the chart responsive
+        // Make the chart responsive with better mobile handling
         this.containerWidth = this.container.clientWidth;
         this.width = this.containerWidth || 600;
-        this.height = Math.min(400, this.width * 0.7); // Maintain aspect ratio
-        this.margin = { top: 30, right: 40, bottom: 50, left: 70 };
+        
+        // Adjust height for mobile - use a more compact height on small screens
+        const isMobile = this.containerWidth < 480;
+        this.height = isMobile ? Math.min(280, this.width * 0.6) : Math.min(400, this.width * 0.7);
+        
+        // Adjust margins for mobile - use smaller margins on small screens
+        this.margin = { 
+            top: 20, 
+            right: isMobile ? 20 : 40, 
+            bottom: isMobile ? 40 : 50, 
+            left: isMobile ? 40 : 70 
+        };
         
         // Improved color scheme to match with our purple theme
         this.lineColor = '#6253b5'; // Primary dark color
@@ -32,6 +42,9 @@ export class XPGraph {
         
         // Gradient ID for area fill
         this.gradientId = 'xpGradient';
+        
+        // Flag to use simplified layout on mobile
+        this.isMobile = isMobile;
     }
 
     processData(data) {
@@ -213,37 +226,41 @@ export class XPGraph {
         const xScale = this.getXScale();
         const yScale = this.getYScale();
 
-        // X-axis with formatted dates
+        // X-axis with formatted dates - adjust tick count for mobile
+        const tickCount = this.isMobile ? 3 : Math.min(this.data.length, 5);
+        
         svg.append('g')
             .attr('class', 'x-axis')
             .attr('transform', `translate(0,${this.height - this.margin.top - this.margin.bottom})`)
             .call(d3.axisBottom(xScale)
-                .ticks(Math.min(this.data.length, 5))
+                .ticks(tickCount)
                 .tickFormat(d => {
-                    // Format the date as month/year
+                    // Simplified date format for mobile
+                    if (this.isMobile) {
+                        return d.toLocaleDateString(undefined, { month: 'short' });
+                    }
+                    // Full format for desktop
                     return d.toLocaleDateString(undefined, { month: 'short', year: 'numeric' });
                 })
             )
             .style('color', '#718096')
-            .selectAll('text')
-            .attr('transform', 'translate(-10,0)rotate(-45)')
-            .style('text-anchor', 'end')
-            .style('font-size', '12px')
-            .style('fill', '#718096');
+            .style('font-size', this.isMobile ? '9px' : '11px');
 
-        // Y-axis with formatted XP values
+        // Y-axis with formatted numbers
         svg.append('g')
             .attr('class', 'y-axis')
             .call(d3.axisLeft(yScale)
+                .ticks(this.isMobile ? 3 : 5)
                 .tickFormat(d => {
-                    // Format the XP value with K for thousands
-                    return d >= 1000 ? `${(d/1000).toFixed(1)}K` : d;
+                    // Simplified number format for mobile
+                    if (d >= 1000) {
+                        return (d / 1000) + 'k';
+                    }
+                    return d;
                 })
             )
             .style('color', '#718096')
-            .selectAll('text')
-            .style('font-size', '12px')
-            .style('fill', '#718096');
+            .style('font-size', this.isMobile ? '9px' : '11px');
             
         // Style axis lines
         svg.selectAll('.x-axis line, .y-axis line')
@@ -333,34 +350,39 @@ export class XPGraph {
     }
     
     addAxisLabels(svg) {
-        // X-axis label
+        // Skip axis labels on very small screens
+        if (this.containerWidth < 350) {
+            return;
+        }
+        
+        // X-axis label - simplified for mobile
         svg.append('text')
             .attr('class', 'x-axis-label')
             .attr('x', (this.width - this.margin.left - this.margin.right) / 2)
-            .attr('y', this.height - this.margin.top - this.margin.bottom + 40)
+            .attr('y', this.height - this.margin.top - this.margin.bottom + (this.isMobile ? 30 : 40))
             .attr('text-anchor', 'middle')
-            .style('font-size', '14px')
+            .style('font-size', this.isMobile ? '10px' : '14px')
             .style('font-weight', '500')
             .style('fill', '#4a5568')
             .style('opacity', 0)
-            .text('Date')
+            .text(this.isMobile ? 'Date' : 'Date')
             .transition()
             .duration(800)
             .delay(1800)
             .style('opacity', 1);
             
-        // Y-axis label
+        // Y-axis label - simplified for mobile
         svg.append('text')
             .attr('class', 'y-axis-label')
             .attr('transform', 'rotate(-90)')
             .attr('x', -(this.height - this.margin.top - this.margin.bottom) / 2)
-            .attr('y', -45)
+            .attr('y', this.isMobile ? -30 : -45)
             .attr('text-anchor', 'middle')
-            .style('font-size', '14px')
+            .style('font-size', this.isMobile ? '10px' : '14px')
             .style('font-weight', '500')
             .style('fill', '#4a5568')
             .style('opacity', 0)
-            .text('Total XP')
+            .text(this.isMobile ? 'XP' : 'Total XP')
             .transition()
             .duration(800)
             .delay(1800)
@@ -379,12 +401,12 @@ export class XPGraph {
             .style('position', 'absolute')
             .style('background-color', 'rgba(0, 0, 0, 0.8)')
             .style('color', 'white')
-            .style('padding', '8px')
+            .style('padding', this.isMobile ? '5px 8px' : '8px')
             .style('border-radius', '4px')
             .style('pointer-events', 'none')
             .style('z-index', 100)
-            .style('font-size', '12px')
-            .style('max-width', '200px')
+            .style('font-size', this.isMobile ? '10px' : '12px')
+            .style('max-width', this.isMobile ? '150px' : '200px');
             
         // Add a vertical line for hover position
         const hoverLine = svg.append('line')
