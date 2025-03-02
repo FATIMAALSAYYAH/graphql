@@ -142,46 +142,41 @@ export class SkillsGraph {
                 return;
             }
             
-            // Clear any previous content
+            // Create the graph container if it doesn't exist
             this.container.innerHTML = '';
             
-            // Create a container div with the new CSS class
+            // Create a container for the skills graph
             const skillsGraphContainer = document.createElement('div');
             skillsGraphContainer.className = 'skills-graph-container';
             this.container.appendChild(skillsGraphContainer);
             
-            // If no data, show no data message
-            if (!this.data || this.data.length === 0) {
-                skillsGraphContainer.innerHTML = `
-                    <div class="no-data-message">
-                        <p>No skills data available to display.</p>
-                    </div>
-                `;
-                return;
-            }
-            
-            console.log('Rendering radar chart with data:', this.data);
-            
+            // Create the SVG for the chart
             const svg = this.createSVG(skillsGraphContainer);
+            
+            // Draw the radar chart
             this.drawRadarChart(svg);
             
-            // Add a skills legend
+            // Create a more prominent legend for mobile
             this.addSkillsLegend(skillsGraphContainer);
+            
         } catch (error) {
             console.error('Error rendering skills graph:', error);
             this.container.innerHTML = `
                 <div class="no-data-message">
                     <p>Error rendering skills graph.</p>
-                    <p>Please try refreshing the page or contact support if the issue persists.</p>
+                    <p>Details: ${error.message}</p>
                 </div>
             `;
         }
     }
 
     createSVG(container) {
-        // Create SVG container div with the new CSS class
+        // Create SVG container div with improved mobile styling
         const svgContainer = document.createElement('div');
         svgContainer.className = 'skills-svg-container';
+        svgContainer.style.width = '100%';
+        svgContainer.style.display = 'flex';
+        svgContainer.style.justifyContent = 'center';
         container.appendChild(svgContainer);
         
         // Create SVG element with explicit dimensions
@@ -193,7 +188,7 @@ export class SkillsGraph {
             .attr('preserveAspectRatio', 'xMidYMid meet')
             .style('overflow', 'visible'); // Allow elements to extend beyond SVG borders
             
-        // Add the center transform group with the new radar-chart class
+        // Add the center transform group
         return svg.append('g')
             .attr('class', 'radar-chart')
             .attr('transform', `translate(${this.width / 2},${this.height / 2})`);
@@ -254,14 +249,39 @@ export class SkillsGraph {
             .style("stroke-width", "1.5px")
             .style("stroke-dasharray", "3, 3");
             
-        // Draw axis labels with font size adjustment for mobile
+        // Draw axis labels with better positioning for mobile
         axis.append("text")
             .attr("class", "radar-label")
             .attr("text-anchor", "middle")
             .attr("dy", "0.35em")
-            .attr("x", (d, i) => rScale(maxValue * cfg.labelFactor) * Math.cos(angleSlice * i - Math.PI / 2))
-            .attr("y", (d, i) => rScale(maxValue * cfg.labelFactor) * Math.sin(angleSlice * i - Math.PI / 2))
-            .style("font-size", this.containerWidth < 400 ? "10px" : "12px") // Smaller font on mobile
+            .attr("x", (d, i) => {
+                // Adjust positions slightly for specific axis labels to avoid edge overlaps
+                let position = rScale(maxValue * cfg.labelFactor) * Math.cos(angleSlice * i - Math.PI / 2);
+                
+                // Adjust labels if needed on small screens
+                if (this.containerWidth < 350) {
+                    // Move PHP and JS labels slightly inward on small screens
+                    if (d.axis === "Php" || d.axis === "Js") {
+                        position = position * 0.9;
+                    }
+                }
+                
+                return position;
+            })
+            .attr("y", (d, i) => {
+                // Adjust positions slightly for specific axis labels to avoid edge overlaps
+                let position = rScale(maxValue * cfg.labelFactor) * Math.sin(angleSlice * i - Math.PI / 2);
+                
+                // Move bottom labels up slightly on small screens
+                if (this.containerWidth < 350 && d.axis === "Front-End") {
+                    position = position * 0.9;
+                }
+                
+                return position;
+            })
+            .style("font-size", this.containerWidth < 400 ? "10px" : "12px")
+            .style("font-weight", this.containerWidth < 400 ? "600" : "500")
+            .style("fill", "#2d3748")
             .text(d => d.axis);
             
         // Draw the radar chart area
@@ -310,19 +330,29 @@ export class SkillsGraph {
     }
     
     addSkillsLegend(container) {
-        // Create a skills legend - responsive for mobile
+        // Create a skills legend - better positioning for mobile
         const legend = document.createElement('div');
         legend.className = 'skills-legend';
-        legend.style.margin = this.containerWidth < 400 ? '5px auto' : '10px auto';
+        legend.style.margin = this.containerWidth < 400 ? '10px auto 0' : '15px auto 0';
         legend.style.maxWidth = '100%';
         legend.style.textAlign = 'center';
+        legend.style.position = 'relative';
+        
+        // For mobile, move the legend to a more visible position
+        if (this.containerWidth < 400) {
+            legend.style.padding = '8px';
+            legend.style.backgroundColor = 'rgba(255, 255, 255, 0.9)';
+            legend.style.borderRadius = '8px';
+            legend.style.boxShadow = '0 2px 4px rgba(0,0,0,0.1)';
+        }
         
         // Add legend title
         const title = document.createElement('div');
         title.textContent = 'Skills';
         title.style.fontWeight = 'bold';
-        title.style.marginBottom = '8px';
-        title.style.fontSize = this.containerWidth < 400 ? '12px' : '14px';
+        title.style.marginBottom = '5px';
+        title.style.fontSize = this.containerWidth < 400 ? '14px' : '14px';
+        title.style.color = '#2d3748';
         legend.appendChild(title);
         
         // Add legend item
@@ -344,7 +374,8 @@ export class SkillsGraph {
         const label = document.createElement('div');
         label.className = 'skills-legend-label';
         label.textContent = 'Skill Level';
-        label.style.fontSize = this.containerWidth < 400 ? '11px' : '12px';
+        label.style.fontSize = this.containerWidth < 400 ? '12px' : '12px';
+        label.style.color = '#4a5568';
         item.appendChild(label);
         
         legend.appendChild(item);
