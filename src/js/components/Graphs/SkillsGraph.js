@@ -21,17 +21,28 @@ export class SkillsGraph {
         
         this.data = this.processData(data);
         
-        // Make chart responsive but maintain minimum dimensions
+        // Make chart responsive with improved mobile handling
         this.containerWidth = this.container.clientWidth;
-        this.width = Math.max(this.containerWidth, 250);
-        this.height = 250; // Fixed height for better visibility
+        
+        // For very small screens, ensure a minimum usable width
+        this.width = Math.max(this.containerWidth, this.containerWidth < 300 ? this.containerWidth : 250);
+        
+        // Adjust height for better aspect ratio on mobile
+        this.height = this.containerWidth < 400 ? 200 : 250;
         
         // Ensure container is at least as tall as the graph
         this.container.style.minHeight = `${this.height}px`;
         
-        // Adjust margins to center the chart better
-        this.margin = { top: 30, right: 30, bottom: 30, left: 30 };
-        this.radius = Math.min(this.width, this.height) / 2.5; // Slightly smaller radius
+        // Adjust margins for better mobile display
+        this.margin = { 
+            top: 30, 
+            right: this.containerWidth < 400 ? 20 : 30, 
+            bottom: 30, 
+            left: this.containerWidth < 400 ? 20 : 30 
+        };
+        
+        // Adjust radius for mobile
+        this.radius = Math.min(this.width, this.height) / (this.containerWidth < 400 ? 2.2 : 2.5);
         
         // Color for the radar area
         this.areaColor = "rgba(138, 123, 217, 0.6)"; // Light purple as in your image
@@ -191,12 +202,12 @@ export class SkillsGraph {
     drawRadarChart(svg) {
         const cfg = {
             levels: 3,           // Number of concentric circles (reduced from 5)
-            labelFactor: 1.25,   // Distance from edge for axis labels (increased)
+            labelFactor: this.containerWidth < 400 ? 1.15 : 1.25,   // Reduced distance for mobile
             axisLineWidth: 1.5,  // Width of the axis lines
             opacityArea: 0.6,    // Opacity of the radar area
-            dotRadius: 5,        // Radius of dots at data points
+            dotRadius: this.containerWidth < 400 ? 4 : 5,        // Smaller dots on mobile
             opacityCircles: 0.1, // Opacity of the concentric circles
-            strokeWidth: 2.5,    // Width of the outline of the area
+            strokeWidth: this.containerWidth < 400 ? 2 : 2.5,    // Thinner strokes on mobile
             roundStrokes: true,  // Whether to use rounded strokes for the area outline
             color: d3.scaleOrdinal().range([this.areaColor]), // Color of the area
         };
@@ -243,13 +254,14 @@ export class SkillsGraph {
             .style("stroke-width", "1.5px")
             .style("stroke-dasharray", "3, 3");
             
-        // Draw axis labels
+        // Draw axis labels with font size adjustment for mobile
         axis.append("text")
             .attr("class", "radar-label")
             .attr("text-anchor", "middle")
             .attr("dy", "0.35em")
             .attr("x", (d, i) => rScale(maxValue * cfg.labelFactor) * Math.cos(angleSlice * i - Math.PI / 2))
             .attr("y", (d, i) => rScale(maxValue * cfg.labelFactor) * Math.sin(angleSlice * i - Math.PI / 2))
+            .style("font-size", this.containerWidth < 400 ? "10px" : "12px") // Smaller font on mobile
             .text(d => d.axis);
             
         // Draw the radar chart area
@@ -280,42 +292,59 @@ export class SkillsGraph {
             .attr("class", "radar-circle")
             .attr("cx", (d, i) => rScale(d.value) * Math.cos(angleSlice * i - Math.PI / 2))
             .attr("cy", (d, i) => rScale(d.value) * Math.sin(angleSlice * i - Math.PI / 2))
-            .attr("r", cfg.dotRadius);
+            .attr("r", cfg.dotRadius)
+            .style("fill", this.lineColor)
+            .style("stroke", "#fff")
+            .style("stroke-width", "1px");
             
-        // Add value labels that appear on hover
+        // Add value labels that appear on hover - smaller and positioned better for mobile
         radarWrapper.selectAll(".radar-value")
             .data(this.data)
             .enter()
             .append("text")
             .attr("class", "radar-value")
             .attr("x", (d, i) => rScale(d.value) * Math.cos(angleSlice * i - Math.PI / 2))
-            .attr("y", (d, i) => rScale(d.value) * Math.sin(angleSlice * i - Math.PI / 2) - 15)
+            .attr("y", (d, i) => rScale(d.value) * Math.sin(angleSlice * i - Math.PI / 2) - (this.containerWidth < 400 ? 10 : 15))
+            .style("font-size", this.containerWidth < 400 ? "9px" : "11px") // Smaller font on mobile
             .text(d => Math.round(d.value * 100) + '%');
     }
     
     addSkillsLegend(container) {
-        // Create a skills legend
+        // Create a skills legend - responsive for mobile
         const legend = document.createElement('div');
         legend.className = 'skills-legend';
+        legend.style.margin = this.containerWidth < 400 ? '5px auto' : '10px auto';
+        legend.style.maxWidth = '100%';
+        legend.style.textAlign = 'center';
         
         // Add legend title
         const title = document.createElement('div');
         title.textContent = 'Skills';
         title.style.fontWeight = 'bold';
         title.style.marginBottom = '8px';
+        title.style.fontSize = this.containerWidth < 400 ? '12px' : '14px';
         legend.appendChild(title);
         
         // Add legend item
         const item = document.createElement('div');
         item.className = 'skills-legend-item';
+        item.style.display = 'flex';
+        item.style.alignItems = 'center';
+        item.style.justifyContent = 'center';
+        item.style.gap = '5px';
         
         const colorBox = document.createElement('div');
         colorBox.className = 'skills-legend-color';
+        colorBox.style.width = '12px';
+        colorBox.style.height = '12px';
+        colorBox.style.backgroundColor = this.areaColor;
+        colorBox.style.borderRadius = '2px';
         item.appendChild(colorBox);
         
         const label = document.createElement('div');
         label.className = 'skills-legend-label';
         label.textContent = 'Skill Level';
+        label.style.fontSize = this.containerWidth < 400 ? '11px' : '12px';
         item.appendChild(label);
         
         legend.appendChild(item);
