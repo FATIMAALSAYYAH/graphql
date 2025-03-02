@@ -461,7 +461,7 @@ export class Profile {
         
         userInfoElement.classList.remove('loading')
         
-        // Add detailed debugging
+        // Debug logs
         console.log('Updating user info with data:', userData)
         console.log('User login:', userData.login)
         console.log('User name:', userData.firstName, userData.lastName)
@@ -476,11 +476,14 @@ export class Profile {
         
         const fullName = [userData.firstName, userData.lastName].filter(Boolean).join(' ')
         
+        // Get email and truncate it for mobile if necessary
+        const emailValue = userData.email || 'N/A';
+        
         userInfoElement.innerHTML = `
             <div class="user-info-card">
                 <h3>${userData.login || 'Anonymous'}</h3>
                 ${fullName ? `<p><strong>Name:</strong> ${fullName}</p>` : ''}
-                <p><strong>Email:</strong> ${userData.email || 'N/A'}</p>
+                <p><strong>Email:</strong> <span style="word-break: break-all; display: inline-block; max-width: 100%;">${emailValue}</span></p>
                 <p><strong>Total XP:</strong> ${totalXP.toLocaleString()} XP</p>
                 <p><strong>Audit Ratio:</strong> ${this.formatAuditRatio(userData.auditRatio)}</p>
                 <p><strong>Audits Done (Up):</strong> ${this.formatToMB(userData.totalUp)}</p>

@@ -470,8 +470,25 @@ body {
         margin-top: 15px;
     }
     
+    .user-info-card {
+        padding: 15px;
+    }
+    
+    .user-info-card p {
+        display: flex;
+        flex-direction: column;
+        margin-bottom: 10px;
+    }
+    
     .user-info-card p strong {
-        min-width: 120px;
+        margin-bottom: 3px;
+        min-width: auto;
+    }
+    
+    .email-value {
+        word-break: break-all;
+        display: inline-block;
+        max-width: 100%;
     }
     
     .graphs-container {
