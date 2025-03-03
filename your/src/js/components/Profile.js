@@ -1,6 +1,5 @@
 import { Auth } from '../api/auth.js'
 import { Login } from './Login.js'
-import { XPGraph } from './Graphs/XPGraph.js'
 import { SkillsGraph } from './Graphs/SkillsGraph.js'
 import { AuditBarGraph } from './Graphs/AuditBarGraph.js'
 import { GET_USER_SKILLS, GET_USER_LEVEL } from '../../queries.js'
@@ -200,9 +199,9 @@ export class Profile {
     formatToMB(number) {
         if (!number) return '0 MB';
         // Convert to MB (1 MB = 1,000,000 for simplicity)
-        const mbValue = number / 1000000;
+        const mbValue = (number / 1000000).toFixed(2);
         // Format with 2 decimal places
-        return mbValue.toFixed(2) + ' MB';
+        return mbValue + ' MB';
     }
 
     async fetchUserLevel() {
@@ -258,11 +257,7 @@ export class Profile {
                 </div>
                 <div class="graphs-container">
                     <div class="graph-box">
-                        <h3>XP Progress</h3>
-                        <div id="xp-graph"></div>
-                    </div>
-                    <div class="graph-box">
-                        <h3>Best skills</h3>
+                        <h3>Skills</h3>
                         <div id="skills-graph"></div>
                     </div>
                     <div class="graph-box">
@@ -312,10 +307,7 @@ export class Profile {
             this.updateUserInfo(this.userData)
             this.updateProjectsInfo(projects)
             
-            // Handle XP Graph
-            this.renderXPGraph(this.userData.transactions)
-            
-            // Handle Skills Graph - explicitly pass the skills data
+            // Handle Skills Graph
             this.renderSkillsGraph(this.userSkills)
             
             // Handle Audit Bar Graph
@@ -330,43 +322,6 @@ export class Profile {
             }
             
             console.log('Detailed load data error:', error)
-        }
-    }
-    
-    renderXPGraph(transactionData) {
-        try {
-            if (transactionData && Array.isArray(transactionData) && transactionData.length > 0) {
-                console.log(`Found ${transactionData.length} transactions for XP graph`)
-                const xpGraphContainer = document.getElementById('xp-graph')
-                if (xpGraphContainer) {
-                    const xpGraph = new XPGraph('xp-graph', transactionData)
-                    xpGraph.render()
-                }
-            } else {
-                console.warn('No transaction data available for XP graph:', transactionData)
-                
-                // Add placeholder for missing XP data
-                const xpGraphContainer = document.getElementById('xp-graph')
-                if (xpGraphContainer) {
-                    xpGraphContainer.innerHTML = `
-                        <div class="no-data-message">
-                            <p>No XP data available to display.</p>
-                            <p>This could happen if you haven't earned any XP yet or if the data couldn't be retrieved.</p>
-                        </div>
-                    `
-                }
-            }
-        } catch (xpError) {
-            console.error('Error rendering XP graph:', xpError)
-            const xpGraphContainer = document.getElementById('xp-graph')
-            if (xpGraphContainer) {
-                xpGraphContainer.innerHTML = `
-                    <div class="no-data-message">
-                        <p>Error rendering XP graph.</p>
-                        <p>Please try refreshing the page or contact support if the issue persists.</p>
-                    </div>
-                `
-            }
         }
     }
     
@@ -461,7 +416,7 @@ export class Profile {
         
         userInfoElement.classList.remove('loading')
         
-        // Debug logs
+        // Add detailed debugging
         console.log('Updating user info with data:', userData)
         console.log('User login:', userData.login)
         console.log('User name:', userData.firstName, userData.lastName)
@@ -471,20 +426,13 @@ export class Profile {
         console.log('User totalUp:', userData.totalUp)
         console.log('User totalDown:', userData.totalDown)
         
-        const totalXP = this.calculateTotalXP(userData.transactions)
-        console.log('Calculated total XP:', totalXP)
-        
         const fullName = [userData.firstName, userData.lastName].filter(Boolean).join(' ')
-        
-        // Get email and truncate it for mobile if necessary
-        const emailValue = userData.email || 'N/A';
         
         userInfoElement.innerHTML = `
             <div class="user-info-card">
                 <h3>${userData.login || 'Anonymous'}</h3>
                 ${fullName ? `<p><strong>Name:</strong> ${fullName}</p>` : ''}
-                <p><strong>Email:</strong> <span style="word-break: break-all; display: inline-block; max-width: 100%;">${emailValue}</span></p>
-                <p><strong>Total XP:</strong> ${totalXP.toLocaleString()} XP</p>
+                <p><strong>Email:</strong> ${userData.email || 'N/A'}</p>
                 <p><strong>Audit Ratio:</strong> ${this.formatAuditRatio(userData.auditRatio)}</p>
                 <p><strong>Audits Done (Up):</strong> ${this.formatToMB(userData.totalUp)}</p>
                 <p><strong>Audits Received (Down):</strong> ${this.formatToMB(userData.totalDown)}</p>

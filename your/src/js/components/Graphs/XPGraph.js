@@ -18,33 +18,24 @@ export class XPGraph {
         
         this.data = this.processData(data);
         
-        // Make the chart responsive with better mobile handling
+        // Make the chart responsive
         this.containerWidth = this.container.clientWidth;
         this.width = this.containerWidth || 600;
+        this.height = Math.min(400, this.width * 0.7); // Maintain aspect ratio
+        this.margin = { top: 30, right: 40, bottom: 50, left: 70 };
         
-        // Adjust height for mobile - use a more compact height on small screens
-        const isMobile = this.containerWidth < 480;
-        this.height = isMobile ? Math.min(280, this.width * 0.6) : Math.min(400, this.width * 0.7);
+        // Update colors for dark theme
+        this.backgroundColor = '#1a1a1a';
+        this.textColor = '#ffffff';
+        this.lineColor = '#6366f1'; // Purple for user line
+        this.compareLineColor = '#8a8a8a'; // Gray for "All students" line
+        this.gridColor = 'rgba(255, 255, 255, 0.1)';
         
-        // Adjust margins for mobile - use smaller margins on small screens
-        this.margin = { 
-            top: 20, 
-            right: isMobile ? 20 : 40, 
-            bottom: isMobile ? 40 : 50, 
-            left: isMobile ? 40 : 70 
-        };
-        
-        // Improved color scheme to match with our purple theme
-        this.lineColor = '#6253b5'; // Primary dark color
-        this.areaColor = 'rgba(138, 123, 217, 0.2)'; // Light purple with transparency
-        this.pointColor = '#8a7bd9'; // Primary color
-        this.gridColor = 'rgba(226, 232, 240, 0.5)'; // Light gray with transparency
+        // Add username
+        this.username = userData?.login || 'User';
         
         // Gradient ID for area fill
         this.gradientId = 'xpGradient';
-        
-        // Flag to use simplified layout on mobile
-        this.isMobile = isMobile;
     }
 
     processData(data) {
@@ -155,7 +146,7 @@ export class XPGraph {
     }
 
     createSVG(container) {
-        // Create SVG container div
+        // Create SVG container div with dark background
         const svgContainer = document.createElement('div');
         svgContainer.className = 'xp-svg-container';
         svgContainer.style.display = 'block';
@@ -164,38 +155,97 @@ export class XPGraph {
         svgContainer.style.height = '100%';
         svgContainer.style.position = 'relative';
         svgContainer.style.overflow = 'visible';
+        svgContainer.style.backgroundColor = this.backgroundColor;
+        svgContainer.style.padding = '20px';
+        svgContainer.style.borderRadius = '8px';
         container.appendChild(svgContainer);
         
-        // Create SVG element
+        // Add title
+        const title = document.createElement('h2');
+        title.textContent = 'XP progression';
+        title.style.color = this.textColor;
+        title.style.marginBottom = '20px';
+        title.style.fontWeight = '400';
+        svgContainer.appendChild(title);
+        
+        // Add legend
+        const legend = document.createElement('div');
+        legend.style.display = 'flex';
+        legend.style.alignItems = 'center';
+        legend.style.marginBottom = '20px';
+        
+        // User legend item
+        const userLegend = document.createElement('div');
+        userLegend.style.display = 'flex';
+        userLegend.style.alignItems = 'center';
+        userLegend.style.marginRight = '20px';
+        
+        const userColor = document.createElement('span');
+        userColor.style.display = 'inline-block';
+        userColor.style.width = '20px';
+        userColor.style.height = '2px';
+        userColor.style.backgroundColor = this.lineColor;
+        userColor.style.marginRight = '8px';
+        
+        const userName = document.createElement('span');
+        userName.textContent = this.username;
+        userName.style.color = this.lineColor;
+        
+        userLegend.appendChild(userColor);
+        userLegend.appendChild(userName);
+        
+        // All students legend item
+        const allLegend = document.createElement('div');
+        allLegend.style.display = 'flex';
+        allLegend.style.alignItems = 'center';
+        
+        const allColor = document.createElement('span');
+        allColor.style.display = 'inline-block';
+        allColor.style.width = '20px';
+        allColor.style.height = '2px';
+        allColor.style.backgroundColor = this.compareLineColor;
+        allColor.style.marginRight = '8px';
+        
+        const allName = document.createElement('span');
+        allName.textContent = 'All students';
+        allName.style.color = '#ffffff';
+        
+        allLegend.appendChild(allColor);
+        allLegend.appendChild(allName);
+        
+        legend.appendChild(userLegend);
+        legend.appendChild(allLegend);
+        svgContainer.appendChild(legend);
+        
+        // Add total XP display
+        const total = document.createElement('div');
+        total.style.position = 'absolute';
+        total.style.top = '30px';
+        total.style.right = '30px';
+        total.style.textAlign = 'right';
+        
+        const totalLabel = document.createElement('div');
+        totalLabel.textContent = 'Total';
+        totalLabel.style.color = '#8a8a8a';
+        
+        const totalValue = document.createElement('div');
+        const lastDataPoint = this.data[this.data.length - 1];
+        totalValue.textContent = `${Math.floor((lastDataPoint?.total || 0) / 1000)} kB`;
+        totalValue.style.color = this.textColor;
+        totalValue.style.fontSize = '18px';
+        
+        total.appendChild(totalLabel);
+        total.appendChild(totalValue);
+        svgContainer.appendChild(total);
+        
+        // Create SVG with dark theme colors
         const svg = d3.select(svgContainer)
             .append('svg')
             .attr('width', this.width)
             .attr('height', this.height)
             .attr('viewBox', `0 0 ${this.width} ${this.height}`)
             .attr('preserveAspectRatio', 'xMidYMid meet')
-            .style('overflow', 'visible')
-            .style('animation', 'fadeIn 0.8s ease-in-out');
-            
-        // Add gradient definition
-        const defs = svg.append('defs');
-        
-        // Gradient for area below the line
-        const gradient = defs.append('linearGradient')
-            .attr('id', this.gradientId)
-            .attr('x1', '0%')
-            .attr('y1', '0%')
-            .attr('x2', '0%')
-            .attr('y2', '100%');
-            
-        gradient.append('stop')
-            .attr('offset', '0%')
-            .attr('stop-color', 'rgba(138, 123, 217, 0.4)')
-            .attr('stop-opacity', 1);
-            
-        gradient.append('stop')
-            .attr('offset', '100%')
-            .attr('stop-color', 'rgba(138, 123, 217, 0.05)')
-            .attr('stop-opacity', 1);
+            .style('overflow', 'visible');
             
         return svg.append('g')
             .attr('transform', `translate(${this.margin.left},${this.margin.top})`)
@@ -226,48 +276,41 @@ export class XPGraph {
         const xScale = this.getXScale();
         const yScale = this.getYScale();
 
-        // X-axis with formatted dates - adjust tick count for mobile
-        const tickCount = this.isMobile ? 3 : Math.min(this.data.length, 5);
-        
+        // X-axis with light colors for dark theme
         svg.append('g')
             .attr('class', 'x-axis')
             .attr('transform', `translate(0,${this.height - this.margin.top - this.margin.bottom})`)
             .call(d3.axisBottom(xScale)
-                .ticks(tickCount)
+                .ticks(5)
+                .tickSize(0)
                 .tickFormat(d => {
-                    // Simplified date format for mobile
-                    if (this.isMobile) {
-                        return d.toLocaleDateString(undefined, { month: 'short' });
-                    }
-                    // Full format for desktop
-                    return d.toLocaleDateString(undefined, { month: 'short', year: 'numeric' });
+                    return d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
                 })
             )
-            .style('color', '#718096')
-            .style('font-size', this.isMobile ? '9px' : '11px');
+            .style('color', 'rgba(255, 255, 255, 0.6)')
+            .selectAll('text')
+            .style('font-size', '12px')
+            .style('fill', 'rgba(255, 255, 255, 0.6)');
 
-        // Y-axis with formatted numbers
+        // Remove domain lines
+        svg.selectAll('.x-axis path.domain, .y-axis path.domain').remove();
+        svg.selectAll('.x-axis line').remove();
+        
+        // Y-axis with KB values
         svg.append('g')
             .attr('class', 'y-axis')
             .call(d3.axisLeft(yScale)
-                .ticks(this.isMobile ? 3 : 5)
+                .tickSize(0)
                 .tickFormat(d => {
-                    // Simplified number format for mobile
-                    if (d >= 1000) {
-                        return (d / 1000) + 'k';
-                    }
-                    return d;
+                    return Math.floor(d/1000) + 'K';
                 })
             )
-            .style('color', '#718096')
-            .style('font-size', this.isMobile ? '9px' : '11px');
+            .style('color', 'rgba(255, 255, 255, 0.6)')
+            .selectAll('text')
+            .style('font-size', '12px')
+            .style('fill', 'rgba(255, 255, 255, 0.6)');
             
-        // Style axis lines
-        svg.selectAll('.x-axis line, .y-axis line')
-            .style('stroke', 'rgba(226, 232, 240, 0.8)');
-            
-        svg.selectAll('.x-axis path.domain, .y-axis path.domain')
-            .style('stroke', 'rgba(226, 232, 240, 0.8)');
+        svg.selectAll('.y-axis line').remove();
     }
 
     drawLine(svg) {
@@ -335,8 +378,8 @@ export class XPGraph {
                 .attr('cx', d => xScale(d.date))
                 .attr('cy', d => yScale(d.total))
                 .attr('r', 0) // Start with radius 0 for animation
-                .attr('fill', this.pointColor)
-                .attr('stroke', 'white')
+                .attr('fill', this.lineColor)
+                .attr('stroke', this.backgroundColor)
                 .attr('stroke-width', 1.5)
                 .style('filter', 'drop-shadow(0px 1px 2px rgba(98, 83, 181, 0.3))');
                 
@@ -350,39 +393,34 @@ export class XPGraph {
     }
     
     addAxisLabels(svg) {
-        // Skip axis labels on very small screens
-        if (this.containerWidth < 350) {
-            return;
-        }
-        
-        // X-axis label - simplified for mobile
+        // X-axis label
         svg.append('text')
             .attr('class', 'x-axis-label')
             .attr('x', (this.width - this.margin.left - this.margin.right) / 2)
-            .attr('y', this.height - this.margin.top - this.margin.bottom + (this.isMobile ? 30 : 40))
+            .attr('y', this.height - this.margin.top - this.margin.bottom + 40)
             .attr('text-anchor', 'middle')
-            .style('font-size', this.isMobile ? '10px' : '14px')
+            .style('font-size', '14px')
             .style('font-weight', '500')
             .style('fill', '#4a5568')
             .style('opacity', 0)
-            .text(this.isMobile ? 'Date' : 'Date')
+            .text('Date')
             .transition()
             .duration(800)
             .delay(1800)
             .style('opacity', 1);
             
-        // Y-axis label - simplified for mobile
+        // Y-axis label
         svg.append('text')
             .attr('class', 'y-axis-label')
             .attr('transform', 'rotate(-90)')
             .attr('x', -(this.height - this.margin.top - this.margin.bottom) / 2)
-            .attr('y', this.isMobile ? -30 : -45)
+            .attr('y', -45)
             .attr('text-anchor', 'middle')
-            .style('font-size', this.isMobile ? '10px' : '14px')
+            .style('font-size', '14px')
             .style('font-weight', '500')
             .style('fill', '#4a5568')
             .style('opacity', 0)
-            .text(this.isMobile ? 'XP' : 'Total XP')
+            .text('Total XP (kB)')
             .transition()
             .duration(800)
             .delay(1800)
@@ -390,100 +428,40 @@ export class XPGraph {
     }
 
     addTooltip(svg) {
-        const xScale = this.getXScale()
-        const yScale = this.getYScale()
+        const xScale = this.getXScale();
+        const yScale = this.getYScale();
         
-        // Create tooltip div
-        const tooltip = d3.select(this.container)
-            .append('div')
-            .attr('class', 'graph-tooltip')
-            .style('opacity', 0)
-            .style('position', 'absolute')
-            .style('background-color', 'rgba(0, 0, 0, 0.8)')
-            .style('color', 'white')
-            .style('padding', this.isMobile ? '5px 8px' : '8px')
-            .style('border-radius', '4px')
-            .style('pointer-events', 'none')
-            .style('z-index', 100)
-            .style('font-size', this.isMobile ? '10px' : '12px')
-            .style('max-width', this.isMobile ? '150px' : '200px');
-            
-        // Add a vertical line for hover position
-        const hoverLine = svg.append('line')
-            .attr('class', 'hover-line')
-            .attr('y1', 0)
-            .attr('y2', this.height - this.margin.top - this.margin.bottom)
-            .style('stroke', '#2c3e50')
-            .style('stroke-width', 1)
-            .style('stroke-dasharray', '3,3')
-            .style('opacity', 0)
-            
-        // Create a transparent overlay to handle mouse events
-        svg.append('rect')
-            .attr('class', 'overlay')
-            .attr('width', this.width - this.margin.left - this.margin.right)
-            .attr('height', this.height - this.margin.top - this.margin.bottom)
-            .style('fill', 'none')
-            .style('pointer-events', 'all')
-            .on('mouseover', () => {
-                tooltip.style('opacity', 0.9)
-                hoverLine.style('opacity', 1)
-            })
-            .on('mouseout', () => {
-                tooltip.style('opacity', 0)
-                hoverLine.style('opacity', 0)
-            })
-            .on('mousemove', (event) => {
-                // Get mouse position relative to the SVG
-                const [mouseX, mouseY] = d3.pointer(event)
-                
-                // Find the closest data point to the mouse position
-                const x0 = xScale.invert(mouseX)
-                const bisect = d3.bisector(d => d.date).left
-                const index = bisect(this.data, x0, 1)
-                
-                if (index >= this.data.length) return
-                
-                const d0 = this.data[index - 1]
-                const d1 = this.data[index]
-                
-                if (!d0 || !d1) return
-                
-                // Choose the closest point
-                const d = x0 - d0.date > d1.date - x0 ? d1 : d0
-                
-                // Position the hover line
-                hoverLine
-                    .attr('x1', xScale(d.date))
-                    .attr('x2', xScale(d.date))
-                
-                // Format the date
-                const formattedDate = d.date.toLocaleDateString(undefined, {
-                    year: 'numeric',
-                    month: 'short',
+        svg.selectAll('.xp-point')
+            .data(this.data)
+            .enter()
+            .append('circle')
+            .attr('class', 'xp-point')
+            .attr('cx', d => xScale(d.date))
+            .attr('cy', d => yScale(d.total))
+            .attr('r', 4)
+            .attr('fill', this.lineColor)
+            .attr('stroke', this.backgroundColor)
+            .attr('stroke-width', 1)
+            .on('mouseover', function(event, d) {
+                // Add tooltip directly next to point
+                const date = d.date.toLocaleDateString(undefined, {
+                    month: 'short', 
                     day: 'numeric'
-                })
+                });
+                const kbValue = Math.floor(d.total / 1000);
                 
-                // Update tooltip content
-                tooltip.html(`
-                    <div><strong>Date:</strong> ${formattedDate}</div>
-                    <div><strong>Project:</strong> ${d.path || 'N/A'}</div>
-                    <div><strong>XP Earned:</strong> ${d.amount.toLocaleString()}</div>
-                    <div><strong>Total XP:</strong> ${d.total.toLocaleString()}</div>
-                `)
-                
-                // Position the tooltip
-                const containerRect = this.container.getBoundingClientRect()
-                const svgRect = d3.select(this.container).select('svg').node().getBoundingClientRect()
-                const tooltipHeight = tooltip.node().getBoundingClientRect().height
-                
-                const left = svgRect.left - containerRect.left + xScale(d.date) + this.margin.left + 10
-                const top = svgRect.top - containerRect.top + yScale(d.total) + this.margin.top - tooltipHeight / 2
-                
-                tooltip
-                    .style('left', `${left}px`)
-                    .style('top', `${top}px`)
+                d3.select(this.parentNode)
+                    .append('text')
+                    .attr('class', 'tooltip-text')
+                    .attr('x', xScale(d.date) + 10)
+                    .attr('y', yScale(d.total) - 10)
+                    .style('fill', '#ffffff')
+                    .style('font-size', '12px')
+                    .text(`${date}: ${kbValue} kB`);
             })
+            .on('mouseout', function() {
+                d3.select(this.parentNode).selectAll('.tooltip-text').remove();
+            });
     }
     
     // Utility methods for scales
@@ -497,5 +475,14 @@ export class XPGraph {
         return d3.scaleLinear()
             .domain([0, d3.max(this.data, d => d.total) * 1.1]) // Add 10% padding on top
             .range([this.height - this.margin.top - this.margin.bottom, 0])
+    }
+
+    formatAxisNumber(num) {
+        if (num >= 1000000) {
+            return (num / 1000).toFixed(0) + 'K';
+        } else if (num >= 1000) {
+            return (num / 1000).toFixed(0) + 'K';
+        }
+        return num;
     }
 } 

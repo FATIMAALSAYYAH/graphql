@@ -1,22 +1,15 @@
 import { Auth } from './api/auth.js'
 import { Login } from './components/Login.js'
 import { Profile } from './components/Profile.js'
-import setupRouter from './router.js'
 
 export class App {
     constructor() {
         this.container = document.getElementById('app')
         this.auth = new Auth()
-        
-        // Setup SPA routing for GitHub Pages
-        setupRouter()
     }
 
     init() {
         try {
-            console.log('App initializing...');
-            console.log('JWT in localStorage:', localStorage.getItem('jwt') ? 'EXISTS' : 'NONE');
-            
             if (this.auth.isAuthenticated()) {
                 console.log('User is authenticated, showing profile')
                 const profile = new Profile(this.container)

@@ -1,10 +1,13 @@
 .profile-container {
-    background: white;
-    border-radius: 8px;
-    box-shadow: 0 0 10px rgba(0,0,0,0.1);
-    padding: 20px;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+    padding: 30px;
     max-width: 1200px;
     margin: 0 auto;
+    border: 1px solid rgba(255, 255, 255, 0.18);
 }
 
 .profile-header {
@@ -13,33 +16,35 @@
     align-items: center;
     margin-bottom: 30px;
     padding-bottom: 20px;
-    border-bottom: 1px solid #eee;
+    border-bottom: 1px solid rgba(0,0,0,0.05);
 }
 
 #logout-button {
-    padding: 8px 16px;
-    background: #dc3545;
+    padding: 10px 20px;
+    background: var(--gradient-secondary);
     color: white;
     border: none;
-    border-radius: 4px;
+    border-radius: 8px;
     cursor: pointer;
-    font-weight: bold;
+    font-weight: 600;
+    transition: all 0.3s ease;
 }
 
 #logout-button:hover {
-    background: #c82333;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(244, 114, 182, 0.25);
 }
 
 /* User info section */
 #user-info, #projects-info {
-    margin-bottom: 30px;
-    transition: opacity 0.3s ease;
+    margin-bottom: 40px;
+    transition: all 0.4s ease;
 }
 
 .loading {
     opacity: 0.7;
     position: relative;
-    min-height: 100px;
+    min-height: 120px;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -49,8 +54,8 @@
 .loader {
     width: 40px;
     height: 40px;
-    border: 4px solid #f3f3f3;
-    border-top: 4px solid #3498db;
+    border: 3px solid rgba(99, 102, 241, 0.1);
+    border-top: 3px solid var(--primary-color);
     border-radius: 50%;
     animation: spin 1s linear infinite;
     margin-bottom: 10px;
@@ -62,25 +67,44 @@
 }
 
 .user-info-card, .projects-card {
-    background: #f8f9fa;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    background: rgba(255, 255, 255, 0.9);
+    padding: 25px;
+    border-radius: 16px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.06);
+    transition: all 0.3s ease;
+    border-left: 4px solid var(--primary-color);
+    position: relative;
+    overflow: hidden;
+}
+
+.user-info-card:hover, .projects-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 25px rgba(0,0,0,0.1);
 }
 
 .user-info-card h3, .projects-card h3 {
     margin-top: 0;
-    color: #2c3e50;
+    color: var(--primary-dark);
     font-size: 1.5rem;
-    margin-bottom: 15px;
-    border-bottom: 1px solid #eaeaea;
-    padding-bottom: 10px;
+    margin-bottom: 20px;
+    border-bottom: 1px solid rgba(0,0,0,0.05);
+    padding-bottom: 12px;
+    font-weight: 600;
 }
 
 .user-info-card p {
-    margin: 10px 0;
+    margin: 12px 0;
     font-size: 1rem;
-    color: #444;
+    color: var(--text-light);
+    display: flex;
+    align-items: center;
+}
+
+.user-info-card p strong {
+    min-width: 150px;
+    display: inline-block;
+    color: var(--text-dark);
+    font-weight: 600;
 }
 
 /* Projects section */
@@ -88,18 +112,25 @@
     display: flex;
     justify-content: space-between;
     flex-wrap: wrap;
-    margin-bottom: 20px;
-    gap: 10px;
+    margin-bottom: 30px;
+    gap: 15px;
 }
 
 .stat-item {
     flex: 1;
-    min-width: 120px;
-    padding: 10px;
+    min-width: 130px;
+    padding: 15px;
     background: white;
-    border-radius: 6px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.03);
     text-align: center;
+    transition: all 0.3s ease;
+    border: 1px solid rgba(0,0,0,0.02);
+}
+
+.stat-item:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 15px rgba(0,0,0,0.08);
 }
 
 .stat-value {

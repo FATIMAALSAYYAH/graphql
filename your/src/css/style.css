@@ -1,17 +1,20 @@
 :root {
-    --primary-color: #8a7bd9;
-    --primary-light: #b5a8f0;
-    --primary-dark: #6253b5;
-    --secondary-color: #f8b4d9;
-    --text-dark: #2d3748;
-    --text-light: #718096;
+    --primary-color: #6366f1;
+    --primary-light: #a5b4fc;
+    --primary-dark: #4f46e5;
+    --secondary-color: #f472b6;
+    --text-dark: #1e293b;
+    --text-light: #64748b;
     --background-light: #ffffff;
-    --background-dark: #f7fafc;
-    --success-color: #48bb78;
-    --danger-color: #f56565;
+    --background-dark: #f8fafc;
+    --success-color: #10b981;
+    --danger-color: #ef4444;
     --card-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
     --container-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
     --transition-speed: 0.3s;
+    --border-radius: 12px;
+    --gradient-primary: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+    --gradient-secondary: linear-gradient(135deg, var(--secondary-color), #d946ef);
 }
 
 * {
@@ -21,10 +24,15 @@
 }
 
 body {
-    font-family: 'Poppins', Arial, sans-serif;
+    font-family: 'Inter', 'Poppins', Arial, sans-serif;
     line-height: 1.6;
     background-color: var(--background-dark);
     color: var(--text-dark);
+    min-height: 100vh;
+    background-image: 
+        radial-gradient(at 40% 20%, rgba(99, 102, 241, 0.03) 0px, transparent 50%),
+        radial-gradient(at 80% 0%, rgba(244, 114, 182, 0.03) 0px, transparent 50%),
+        radial-gradient(at 0% 50%, rgba(99, 102, 241, 0.03) 0px, transparent 50%);
 }
 
 #app {
@@ -36,16 +44,29 @@ body {
 /* Profile Container Styles */
 .profile-container {
     background-color: var(--background-light);
-    border-radius: 16px;
+    border-radius: var(--border-radius);
     box-shadow: var(--container-shadow);
     padding: 30px;
     margin-bottom: 40px;
-    transition: transform var(--transition-speed);
+    transition: transform var(--transition-speed), box-shadow var(--transition-speed);
     animation: fadeIn 0.8s ease-in-out;
+    position: relative;
+    overflow: hidden;
+}
+
+.profile-container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 4px;
+    background: var(--gradient-primary);
 }
 
 .profile-container:hover {
     transform: translateY(-5px);
+    box-shadow: 0 25px 30px -5px rgba(0, 0, 0, 0.15);
 }
 
 @keyframes fadeIn {
@@ -82,7 +103,7 @@ body {
 }
 
 #logout-button {
-    background-color: var(--danger-color);
+    background: var(--gradient-secondary);
     color: white;
     border: none;
     padding: 10px 20px;
@@ -91,25 +112,39 @@ body {
     font-size: 14px;
     font-weight: 500;
     transition: all var(--transition-speed);
-    box-shadow: 0 4px 6px rgba(245, 101, 101, 0.2);
+    box-shadow: 0 4px 6px rgba(244, 114, 182, 0.25);
 }
 
 #logout-button:hover {
-    background-color: #e53e3e;
     transform: translateY(-2px);
-    box-shadow: 0 6px 8px rgba(245, 101, 101, 0.3);
+    box-shadow: 0 6px 8px rgba(244, 114, 182, 0.35);
 }
 
 /* User Info Card Styles */
 .user-info-card {
-    background: linear-gradient(135deg, #f5f7fa 0%, #f8f9fb 100%);
-    border-radius: 12px;
+    background: linear-gradient(135deg, #f8fafc 0%, #ffffff 100%);
+    border-radius: var(--border-radius);
     padding: 25px;
     margin-bottom: 25px;
     box-shadow: var(--card-shadow);
     transition: all var(--transition-speed);
     animation: slideIn 0.6s ease-out;
     border-left: 4px solid var(--primary-color);
+    position: relative;
+    overflow: hidden;
+}
+
+.user-info-card::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 100px;
+    height: 100px;
+    background: radial-gradient(circle, var(--primary-light) 0%, transparent 70%);
+    opacity: 0.1;
+    border-radius: 50%;
+    transform: translate(30%, -30%);
 }
 
 .user-info-card:hover {
@@ -123,6 +158,18 @@ body {
     color: var(--primary-dark);
     font-weight: 600;
     letter-spacing: 0.5px;
+    display: flex;
+    align-items: center;
+}
+
+.user-info-card h3::before {
+    content: '';
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    background-color: var(--primary-color);
+    border-radius: 50%;
+    margin-right: 10px;
 }
 
 .user-info-card p {
@@ -470,125 +517,7 @@ body {
         margin-top: 15px;
     }
     
-    .user-info-card {
-        padding: 15px;
-    }
-    
-    .user-info-card p {
-        display: flex;
-        flex-direction: column;
-        margin-bottom: 10px;
-    }
-    
     .user-info-card p strong {
-        margin-bottom: 3px;
-        min-width: auto;
-    }
-    
-    .email-value {
-        word-break: break-all;
-        display: inline-block;
-        max-width: 100%;
-    }
-    
-    .graphs-container {
-        grid-template-columns: 1fr;
-        gap: 15px;
-    }
-    
-    .graphs-container .graph-box:nth-child(3) {
-        grid-column: auto;
-    }
-    
-    .graph-box {
-        min-height: 300px;
-        padding: 15px;
-    }
-    
-    .graph-box h3 {
-        font-size: 16px;
-        margin-bottom: 10px;
-    }
-    
-    /* Radar chart specific styles */
-    .skills-graph-container {
-        position: relative;
-        padding-bottom: 20px;
-    }
-    
-    .skills-svg-container {
-        width: 100%;
-        display: flex;
-        justify-content: center;
-    }
-    
-    .radar-label {
-        font-size: 10px;
-    }
-    
-    .radar-value {
-        font-size: 9px;
-    }
-    
-    .skills-legend {
-        position: relative;
-        z-index: 10;
-        margin-top: 10px !important;
-        border: 1px solid rgba(226, 232, 240, 0.6);
-        width: fit-content;
-        margin-left: auto !important;
-        margin-right: auto !important;
-        padding: 5px 12px !important;
-    }
-    
-    .radar-chart {
-        margin-bottom: 5px;
-    }
-    
-    /* Improve label visibility */
-    .radar-label {
-        font-weight: 600 !important;
-        font-size: 10px !important;
-        fill: #2d3748 !important;
-    }
-    
-    /* Highlight dots for better visibility */
-    .radar-circle {
-        r: 4.5 !important;
-        stroke-width: 1.5px !important;
-    }
-    
-    /* XP Graph specific mobile styles */
-    .xp-svg-container svg {
-        overflow: visible !important;
-    }
-    
-    .x-axis text, .y-axis text {
-        font-size: 9px !important;
-    }
-    
-    .x-axis-label, .y-axis-label {
-        font-size: 10px !important;
-    }
-    
-    .graph-tooltip {
-        font-size: 10px !important;
-        padding: 4px 6px !important;
-        max-width: 140px !important;
-    }
-    
-    /* Audit graph specific mobile styles */
-    .audit-svg-container svg {
-        overflow: visible !important;
-    }
-    
-    .value-label, .description-label {
-        font-size: 10px !important;
-    }
-    
-    /* Common graph styles for mobile */
-    .graph-box {
-        min-height: 250px;
-        overflow: visible;
+        min-width: 120px;
     }
 } 

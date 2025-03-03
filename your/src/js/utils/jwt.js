@@ -43,44 +43,49 @@ export class JWTUtil {
     }
 
     static validateToken(token) {
-        if (!token) return false;
+        if (!token || typeof token !== 'string') {
+            console.error('Token is empty or not a string');
+            return false;
+        }
         
-        // Basic structure validation
+        // Check if token has three parts
         const parts = token.split('.');
-        if (parts.length !== 3) return false;
-        
+        if (parts.length !== 3) {
+            console.error('Token does not have three parts:', parts.length);
+            return false;
+        }
+
+        // Additional validation: check if each part is valid base64url
         try {
-            // Try to parse the payload to check expiration
-            const payload = JSON.parse(atob(this.base64UrlToBase64(parts[1])));
-            
-            // Check if token is expired
-            if (payload.exp && Date.now() >= payload.exp * 1000) {
-                console.log('Token expired');
-                return false;
+            for (let i = 0; i < parts.length; i++) {
+                const part = parts[i];
+                // Simple check: base64url should only contain these characters
+                if (!/^[A-Za-z0-9_-]*$/.test(part)) {
+                    console.error(`Token part ${i} contains invalid characters`);
+                    return false;
+                }
+                
+                // Try to convert to base64
+                try {
+                    this.base64UrlToBase64(part);
+                } catch (e) {
+                    console.error(`Failed to convert token part ${i} to base64:`, e);
+                    return false;
+                }
             }
-            
             return true;
-        } catch (e) {
-            console.error('Token validation error:', e);
+        } catch (error) {
+            console.error('Token validation error:', error);
             return false;
         }
     }
 
     static getToken() {
-        return localStorage.getItem('jwt');
-    }
-    
-    static setToken(token) {
-        if (token) {
-            localStorage.setItem('jwt', token);
-            console.log('Token stored in localStorage');
-        } else {
+        const token = localStorage.getItem('jwt');
+        if (!token || !this.validateToken(token)) {
             localStorage.removeItem('jwt');
-            console.log('Token removed from localStorage');
+            return null;
         }
-    }
-    
-    static clearToken() {
-        localStorage.removeItem('jwt');
+        return token;
     }
 }

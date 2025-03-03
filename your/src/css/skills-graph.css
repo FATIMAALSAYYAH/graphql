@@ -1,0 +1,453 @@
+.axis-label {
+  font-size: 12px;
+  font-weight: 500;
+  fill: var(--text-dark);
+  transition: font-size 0.3s ease, font-weight 0.3s ease;
+}
+
+.axis-label:hover {
+  font-size: 13px;
+  font-weight: 600;
+  fill: var(--primary-dark);
+}
+
+.radarArea {
+  fill: var(--primary-color);
+  fill-opacity: 0.6;
+  stroke: var(--primary-color);
+  stroke-width: 2px;
+  transition: all 0.4s ease;
+  filter: drop-shadow(0px 4px 6px rgba(99, 102, 241, 0.25));
+}
+
+.radarArea:hover {
+  fill-opacity: 0.75 !important;
+  stroke-width: 2.5px;
+  filter: drop-shadow(0px 6px 8px rgba(99, 102, 241, 0.35));
+}
+
+.radarCircle {
+  fill: var(--primary-color);
+  fill-opacity: 0.9;
+  stroke: white;
+  stroke-width: 1.5px;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.radarCircle:hover {
+  r: 6.5;
+  fill: var(--primary-dark);
+  stroke-width: 2px;
+  filter: drop-shadow(0px 3px 5px rgba(0,0,0,0.2));
+}
+
+.axisCircle {
+  fill: rgba(240, 240, 250, 0.5);
+  stroke: rgba(200, 210, 240, 0.5);
+  transition: fill 0.3s ease;
+}
+
+.axisCircle:nth-child(odd) {
+  fill: rgba(230, 230, 250, 0.3);
+}
+
+/* Skills graph specific styling */
+#skills-graph {
+  height: 350px;
+  width: 100%;
+  position: relative;
+  overflow: visible;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: all 0.5s ease;
+}
+
+/* SVG container sizing */
+#skills-graph svg {
+  width: 100%;
+  height: 100%;
+  max-height: 350px;
+  overflow: visible;
+  transition: transform 0.5s ease;
+}
+
+#skills-graph svg:hover {
+  transform: scale(1.02);
+}
+
+.axis line {
+  stroke: rgba(100, 120, 200, 0.15);
+  transition: stroke 0.3s ease;
+}
+
+.see-more-container {
+  margin-top: 20px;
+  text-align: center;
+}
+
+.see-more-button {
+  background: var(--gradient-primary);
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 6px rgba(99, 102, 241, 0.2);
+}
+
+.see-more-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 8px rgba(99, 102, 241, 0.3);
+}
+
+/* Graph text color for white background */
+.graph-box text {
+  fill: var(--text-dark);
+  transition: fill 0.3s ease;
+}
+
+/* Graph box container sizing */
+.graph-box {
+  min-height: 400px;
+  overflow: visible;
+  background: white;
+  border-radius: var(--border-radius);
+  padding: 20px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+  transition: all 0.4s ease;
+  position: relative;
+  border: 1px solid rgba(240, 240, 250, 0.8);
+}
+
+.graph-box:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 15px 30px rgba(0,0,0,0.08);
+}
+
+.graph-box h3 {
+  text-align: center;
+  margin-bottom: 20px;
+  color: var(--primary-dark);
+  font-weight: 600;
+}
+
+/* Skills Graph Styles */
+.skills-graph-container {
+  background-color: white;
+  color: var(--text-dark);
+  padding: 30px;
+  border-radius: var(--border-radius);
+  position: relative;
+  width: 100%;
+  margin-bottom: 20px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: space-between;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+  border: 1px solid rgba(240, 240, 250, 0.8);
+  transition: all 0.4s ease;
+}
+
+.skills-graph-container:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 15px 30px rgba(0,0,0,0.08);
+}
+
+.skills-content {
+  flex: 1;
+  max-width: 50%;
+  padding-right: 20px;
+}
+
+.skills-header {
+  position: relative;
+  padding-left: 20px;
+  margin-bottom: 20px;
+}
+
+.skills-header::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  width: 4px;
+  background-color: var(--primary-color);
+  border-radius: 0 2px 2px 0;
+}
+
+.skills-title {
+  color: var(--primary-dark);
+  margin: 0 0 20px 0;
+  font-size: 28px;
+  font-weight: 500;
+}
+
+.skills-subtitle {
+  color: var(--text-dark);
+  margin: 0;
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+.skills-see-more {
+  color: var(--primary-color);
+  text-decoration: none;
+  font-size: 16px;
+  display: block;
+  margin-top: 20px;
+}
+
+.skills-see-more:hover {
+  text-decoration: underline;
+}
+
+.skills-svg-container {
+  flex: 1;
+  width: 50%;
+  height: 400px;
+  background-color: white;
+  border-radius: var(--border-radius);
+}
+
+.radar-grid-circle {
+  fill: none;
+  stroke: rgba(180, 180, 200, 0.4);
+  stroke-width: 1px;
+}
+
+.axis-line {
+  stroke: rgba(180, 180, 200, 0.4);
+  stroke-width: 1px;
+  stroke-dasharray: 3, 3;
+}
+
+.axis-label {
+  fill: var(--text-dark);
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.axis-value {
+  fill: var(--primary-dark);
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.radar-area {
+  fill: rgba(138, 123, 217, 0.6);
+  stroke: var(--primary-color);
+  stroke-width: 2px;
+  filter: drop-shadow(0 4px 8px rgba(138, 123, 217, 0.4));
+}
+
+.radar-point {
+  fill: white;
+  stroke: var(--primary-color);
+  stroke-width: 2px;
+  filter: drop-shadow(0 2px 4px rgba(138, 123, 217, 0.5));
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .skills-graph-container {
+    flex-direction: column;
+    padding: 20px;
+  }
+  
+  .skills-content {
+    max-width: 100%;
+    padding-right: 0;
+    margin-bottom: 30px;
+  }
+  
+  .skills-svg-container {
+    width: 100%;
+    height: 350px;
+  }
+  
+  .skills-title {
+    font-size: 24px;
+  }
+  
+  .skills-subtitle {
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  .skills-svg-container {
+    height: 300px;
+  }
+}
+
+.radar-chart {
+  transition: all 0.5s ease-in-out;
+  transform-origin: center;
+  animation: pulseRadar 2s ease-in-out;
+}
+
+@keyframes pulseRadar {
+  0% {
+    transform: scale(0.92);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.05);
+    opacity: 0.8;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.radar-level {
+  fill: none;
+  stroke: rgba(200, 200, 220, 0.3);
+  stroke-width: 1px;
+  transition: all 0.3s ease;
+}
+
+.radar-level:hover {
+  stroke: rgba(200, 200, 220, 0.5);
+  stroke-width: 1.5px;
+}
+
+.radar-axis {
+  stroke: rgba(180, 180, 200, 0.4);
+  stroke-width: 1.5px;
+  stroke-dasharray: 3, 3;
+  transition: all 0.3s ease;
+}
+
+.radar-axis:hover {
+  stroke: rgba(180, 180, 200, 0.6);
+  stroke-width: 2px;
+  stroke-dasharray: none;
+}
+
+.radar-area {
+  fill: rgba(138, 123, 217, 0.6);
+  stroke: rgba(138, 123, 217, 0.9);
+  stroke-width: 2.5px;
+  filter: drop-shadow(0 4px 8px rgba(138, 123, 217, 0.4));
+  transition: all 0.3s ease;
+  animation: fadeInArea 1s ease-in-out 0.5s backwards;
+}
+
+@keyframes fadeInArea {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.radar-area:hover {
+  fill: rgba(138, 123, 217, 0.7);
+  filter: drop-shadow(0 6px 12px rgba(138, 123, 217, 0.5));
+}
+
+.radar-circle {
+  fill: #8a7bd9;
+  stroke: white;
+  stroke-width: 1.5px;
+  r: 5;
+  filter: drop-shadow(0 2px 4px rgba(138, 123, 217, 0.5));
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) 1s backwards;
+}
+
+@keyframes popIn {
+  from {
+    r: 0;
+    opacity: 0;
+  }
+  to {
+    r: 5;
+    opacity: 1;
+  }
+}
+
+.radar-circle:hover {
+  r: 7;
+  fill: #6253b5;
+  stroke-width: 2px;
+  filter: drop-shadow(0 4px 8px rgba(138, 123, 217, 0.7));
+}
+
+.radar-label {
+  font-family: 'Poppins', Arial, sans-serif;
+  font-size: 12px;
+  font-weight: 500;
+  fill: #2d3748;
+  text-anchor: middle;
+  dominant-baseline: central;
+  transition: all 0.3s ease;
+  animation: fadeIn 0.8s ease-in-out 1.2s backwards;
+}
+
+.radar-label:hover {
+  font-size: 14px;
+  font-weight: 600;
+  fill: #6253b5;
+}
+
+.radar-value {
+  font-family: 'Poppins', Arial, sans-serif;
+  font-size: 10px;
+  font-weight: 600;
+  fill: #6253b5;
+  text-anchor: middle;
+  dominant-baseline: central;
+  opacity: 0;
+  transition: all 0.3s ease;
+}
+
+.radar-circle:hover + .radar-value {
+  opacity: 1;
+  font-size: 12px;
+}
+
+.skills-legend {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  background-color: rgba(255, 255, 255, 0.8);
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 12px;
+  color: #2d3748;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  animation: fadeIn 1s ease-in-out 1.5s backwards;
+  border-left: 3px solid #8a7bd9;
+}
+
+.skills-legend-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 5px;
+}
+
+.skills-legend-color {
+  width: 12px;
+  height: 12px;
+  border-radius: 3px;
+  margin-right: 8px;
+  background-color: #8a7bd9;
+}
+
+.skills-legend-label {
+  font-weight: 500;
+} 
